@@ -1,4 +1,4 @@
-package svc.exceptions;
+package svc.exception;
 
 /**
  * Gonna force 400 error.

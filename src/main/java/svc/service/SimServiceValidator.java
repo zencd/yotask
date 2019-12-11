@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import svc.dto.ConsumeQuotaRequest;
 import svc.dto.CreateQuotaRequest;
 import svc.entity.SimQuotaType;
-import svc.exceptions.IncorrectRequestException;
+import svc.exception.IncorrectRequestException;
 
 /**
  * Validates data and retrieves required things (maybe).

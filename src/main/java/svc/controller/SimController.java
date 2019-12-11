@@ -18,8 +18,8 @@ import svc.dto.CreateQuotaRequest;
 import svc.dto.SimQuotaInfo;
 import svc.entity.SimCard;
 import svc.entity.SimQuota;
-import svc.exceptions.IncorrectRequestException;
-import svc.exceptions.NotFoundException;
+import svc.exception.IncorrectRequestException;
+import svc.exception.NotFoundException;
 import svc.service.SimCardService;
 import svc.service.SimServiceValidator;
 

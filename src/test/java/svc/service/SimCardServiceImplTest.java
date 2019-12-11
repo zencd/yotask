@@ -14,7 +14,7 @@ import svc.entity.SimCard;
 import svc.entity.SimCardStatus;
 import svc.entity.SimQuota;
 import svc.entity.SimQuotaType;
-import svc.exceptions.NotFoundException;
+import svc.exception.NotFoundException;
 import svc.repository.SimCardRepository;
 import svc.repository.SimQuotaRepository;
 
