@@ -29,4 +29,4 @@
 
 1. cd the project
 1. `gradlew clean test bootJar && java -jar build/libs/service-0.0.1-SNAPSHOT.jar`
-1. Locate http://localhost:8080/ for swagger and DB console
+1. Locate http://localhost:8080/ for swagger and DB console links
