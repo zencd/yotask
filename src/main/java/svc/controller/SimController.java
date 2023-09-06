@@ -71,15 +71,4 @@ public class SimController {
         log.info("activateSim() requested with simId: {}, enabled: {}", simId, enabled);
         simCardService.activateSim(simId, enabled);
     }
-
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<String> error404(NotFoundException e) {
-        //return ResponseEntity.badRequest().body("Not found");
-        return ResponseEntity.notFound().build();
-    }
-
-    @ExceptionHandler(IncorrectRequestException.class)
-    public ResponseEntity<String> error400(IncorrectRequestException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
 }

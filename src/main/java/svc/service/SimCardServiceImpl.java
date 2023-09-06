@@ -13,7 +13,7 @@ import svc.dto.SimQuotaInfo;
 import svc.entity.SimCard;
 import svc.entity.SimCardStatus;
 import svc.entity.SimQuota;
-import svc.entity.SimQuotaType;
+import svc.dto.SimQuotaType;
 import svc.exception.NotFoundException;
 import svc.mapper.SimQuotaMapper;
 import svc.repository.SimCardRepository;

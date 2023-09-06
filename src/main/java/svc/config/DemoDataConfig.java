@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
 import svc.entity.SimCard;
 import svc.entity.SimQuota;
-import svc.entity.SimQuotaType;
+import svc.dto.SimQuotaType;
 import svc.repository.SimCardRepository;
 import svc.repository.SimQuotaRepository;
 
@@ -39,7 +39,6 @@ public class DemoDataConfig {
                 .simCard(sim)
                 .type(SimQuotaType.VOICE)
                 .balance(new BigDecimal(60))
-                //.endDate(makeDate(2021, 1, 1))
                 .endDate(OffsetDateTime.of(2021, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
                 .build());
 
@@ -47,7 +46,6 @@ public class DemoDataConfig {
                 .simCard(sim)
                 .type(SimQuotaType.TRAFFIC)
                 .balance(new BigDecimal(2048))
-                //.endDate(makeDate(2021, 1, 1))
                 .endDate(OffsetDateTime.of(2021, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
                 .build());
     }
