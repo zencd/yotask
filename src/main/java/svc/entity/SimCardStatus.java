@@ -3,6 +3,7 @@ package svc.entity;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum SimCardStatus {
+
     DISABLED(0), ENABLED(1);
 
     private int intValue;
@@ -15,7 +16,7 @@ public enum SimCardStatus {
     }
 
     @JsonValue
-    public int toValue() {
+    public int jsonValue() {
         return intValue;
     }
 

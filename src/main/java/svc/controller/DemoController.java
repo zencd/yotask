@@ -1,40 +1,41 @@
 package svc.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import svc.entity.SimCard;
+import svc.repository.SimCardRepository;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 /**
- * Displays some helpful info.
+ * For demo only.
  */
-@Controller
+@Profile("demo")
+@RestController
 public class DemoController {
 
     @Value("classpath:banner.txt")
     Resource bannerFile;
 
     @Autowired
-    ResourceLoader resourceLoader;
+    SimCardRepository simCardRepository;
 
     @ResponseBody
-    @RequestMapping(value = "/", produces = "text/plain; charset=utf-8")
-    String showHelp() throws IOException {
-        Resource resource = resourceLoader.getResource("classpath:banner.txt");
-        return new String(loadResource(resource), StandardCharsets.UTF_8);
+    @GetMapping(value = "/", produces = "text/html; charset=utf-8")
+    Resource index() throws IOException {
+        return bannerFile;
     }
 
-    static byte[] loadResource(Resource resource) throws IOException {
-        try(InputStream inputStream = resource.getInputStream()) {
-            return FileCopyUtils.copyToByteArray(inputStream);
-        }
+    @GetMapping("/sims")
+    @Operation(summary = "For development only.")
+    public List<SimCard> allSims() {
+        return simCardRepository.findAll();
     }
 }

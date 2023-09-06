@@ -1,0 +1,5 @@
+ext {
+    versions = [
+            'springBoot': '2.7.15'
+    ]
+}

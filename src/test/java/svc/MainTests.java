@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class MainTests {
 
 	@Test
-	public void whenStarted_contextLoads() {
+	public void contextLoads() {
 	}
 
 }

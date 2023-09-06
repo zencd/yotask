@@ -11,6 +11,7 @@ public enum SimQuotaStatus {
     DISABLED(0), ENABLED(1);
 
     private int intValue;
+
     SimQuotaStatus(int intValue) {
         if (ordinal() != intValue) {
             // XXX Using EnumType.ORDINAL in entities, so make sure the enum values are not reordered randomly.
@@ -20,7 +21,7 @@ public enum SimQuotaStatus {
     }
 
     @JsonValue
-    public int toValue() {
+    public int jsonValue() {
         return intValue;
     }
 

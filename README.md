@@ -26,11 +26,12 @@
 
 ## Implementation
 
+- Java 17
+- Spring Boot 3.1
 - H2 in-memory DB used
-- Java 8 (checked with)
 
 ## Run
 
-1. cd the project
-1. `gradlew clean test bootJar && java -jar build/libs/service-0.0.1-SNAPSHOT.jar`
-1. Locate http://localhost:8080/ for swagger and DB console links
+1. `cd yotask`
+2. `./gradlew clean test bootJar && java -jar -Dspring.profiles.active=demo build/libs/simService-0.0.1-SNAPSHOT.jar`
+3. Locate http://localhost:8080/ for further details

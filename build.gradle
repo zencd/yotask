@@ -1,31 +1,51 @@
+buildscript {
+}
+
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '2.2.2.RELEASE'
+    id 'org.springframework.boot' version '3.1.3'
 }
 
 repositories {
-    mavenLocal()
-    maven {
-        url = 'https://repo.maven.apache.org/maven2'
-    }
+    mavenCentral()
 }
 
 group = 'pasza'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
-archivesBaseName = 'service'
+archivesBaseName = 'simService'
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
 
-def springBootVersion = '2.2.2.RELEASE'
-def swaggerVersion = '2.9.2'
+def versions = [
+        boot: '3.1.3',
+        lombok: '1.18.28',
+        mapstruct: '1.4.2.Final',
+]
 
 dependencies {
-    implementation "org.springframework.boot:spring-boot-starter:${springBootVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
-    implementation "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}"
-    implementation "io.springfox:springfox-swagger2:${swaggerVersion}"
-    implementation "io.springfox:springfox-swagger-ui:${swaggerVersion}"
+    implementation "org.springframework.boot:spring-boot-starter:${versions.boot}"
+    implementation "org.springframework.boot:spring-boot-starter-web:${versions.boot}"
+    implementation "org.springframework.boot:spring-boot-devtools:${versions.boot}"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${versions.boot}"
+    implementation "org.springframework.boot:spring-boot-starter-actuator:${versions.boot}"
+    implementation "org.springframework.boot:spring-boot-starter-validation:${versions.boot}"
+    implementation "org.springframework.boot:spring-boot-starter-logging:${versions.boot}"
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+    implementation 'io.swagger.core.v3:swagger-annotations:2.2.15'
+
     runtimeOnly "com.h2database:h2:1.4.200"
-    testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+    runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1'
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test:${versions.boot}"
+    testImplementation 'junit:junit:4.12'
+
+    compileOnly 'org.projectlombok:lombok:1.18.28'
+    annotationProcessor 'org.projectlombok:lombok:1.18.28'
+    testCompileOnly 'org.projectlombok:lombok:1.18.28'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
+
+    implementation "org.mapstruct:mapstruct:${versions.mapstruct}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${versions.mapstruct}"
 }

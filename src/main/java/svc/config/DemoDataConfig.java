@@ -1,8 +1,11 @@
 package svc.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.annotation.PostConstruct;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
 import svc.entity.SimCard;
 import svc.entity.SimQuota;
@@ -10,50 +13,43 @@ import svc.entity.SimQuotaType;
 import svc.repository.SimCardRepository;
 import svc.repository.SimQuotaRepository;
 
-import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
-
-import static svc.TestUtils.makeDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 /**
  * Adds some test data to a demo instance.
  */
+@Profile("demo")
 @Configuration
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class DemoDataConfig {
 
-    private SimCardRepository simCardRepository;
-    private SimQuotaRepository simQuotaRepository;
-
-    @Autowired
-    public DemoDataConfig(SimCardRepository simCardRepository, SimQuotaRepository simQuotaRepository) {
-        this.simCardRepository = simCardRepository;
-        this.simQuotaRepository = simQuotaRepository;
-    }
+    SimCardRepository simCardRepository;
+    SimQuotaRepository simQuotaRepository;
 
     @PostConstruct
     @Transactional
     public void postConstruct() {
-        SimCard sim = new SimCard();
-        sim.setMsisdn("79001234567");
+        SimCard sim = SimCard.builder().msisdn("79001234567").build();
         simCardRepository.save(sim);
 
-        {
-            SimQuota q = new SimQuota();
-            q.setSimCard(sim);
-            q.setType(SimQuotaType.VOICE);
-            q.setBalance(new BigDecimal(60));
-            q.setEndDate(makeDate(2021, 1, 1));
-            simQuotaRepository.save(q);
-        }
+        simQuotaRepository.save(SimQuota.builder()
+                .simCard(sim)
+                .type(SimQuotaType.VOICE)
+                .balance(new BigDecimal(60))
+                //.endDate(makeDate(2021, 1, 1))
+                .endDate(OffsetDateTime.of(2021, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
+                .build());
 
-        {
-            SimQuota q = new SimQuota();
-            q.setSimCard(sim);
-            q.setType(SimQuotaType.TRAFFIC);
-            q.setBalance(new BigDecimal(2048));
-            q.setEndDate(makeDate(2021, 1, 1));
-            simQuotaRepository.save(q);
-        }
+        simQuotaRepository.save(SimQuota.builder()
+                .simCard(sim)
+                .type(SimQuotaType.TRAFFIC)
+                .balance(new BigDecimal(2048))
+                //.endDate(makeDate(2021, 1, 1))
+                .endDate(OffsetDateTime.of(2021, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
+                .build());
     }
 
 }

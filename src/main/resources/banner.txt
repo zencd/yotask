@@ -1,3 +1,4 @@
+<pre>
    _____ _              ____              __           _____                 _
   / ___/(_)___ ___     / __ \__  ______  / /_____ _   / ___/___  ______   __(_)_______
   \__ \/ / __ `__ \   / / / / / / / __ \/ __/ __ `/   \__ \/ _ \/ ___/ | / / / ___/ _ \
@@ -7,8 +8,7 @@
 DB UI, use "jdbc:h2:mem:demo_db"
 http://localhost:8080/h2-console
 
-Swagger
-http://localhost:8080/swagger-ui.html
+<a href="http://localhost:8080/swagger-ui/index.html">Swagger</a>
 
 There is a SIM with id=1 predefined
 http://localhost:8080/sims/1/quota/available

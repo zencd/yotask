@@ -13,6 +13,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import svc.dto.ConsumeQuotaRequest;
 import svc.dto.CreateQuotaRequest;
@@ -23,10 +25,9 @@ import svc.entity.SimQuotaType;
 import svc.exception.NotFoundException;
 import svc.repository.SimCardRepository;
 import svc.service.SimCardService;
-import svc.service.SimServiceValidator;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -53,9 +54,6 @@ public class SimControllerTest {
 
     @MockBean
     private SimCardRepository simCardRepository;
-
-    @MockBean
-    private SimServiceValidator validator;
 
     private static final Matcher<Object> NULL = IsNull.nullValue();
 
@@ -94,14 +92,15 @@ public class SimControllerTest {
     public void addQuota_mainSuccess() throws Exception {
         CreateQuotaRequest request = new CreateQuotaRequest();
         request.setAmount(new BigDecimal(20));
-        request.setType("voice");
-        request.setEndDate(new Date());
+        request.setType(SimQuotaType.VOICE);
+        request.setEndDate(OffsetDateTime.now());
 
-        SimQuota response = new SimQuota();
-        response.setId(500);
-        response.setBalance(BigDecimal.valueOf(123));
-        response.setType(SimQuotaType.TRAFFIC);
-        response.setStatus(SimQuotaStatus.ENABLED);
+        SimQuota response = SimQuota.builder()
+                .id(500)
+                .balance(BigDecimal.valueOf(123))
+                .type(SimQuotaType.TRAFFIC)
+                .status(SimQuotaStatus.ENABLED)
+                .build();
 
         given(simCardService.createQuota(any()))
                 .willReturn(response);
@@ -122,14 +121,10 @@ public class SimControllerTest {
 
     @Test
     public void addQuota_badType() throws Exception {
-        CreateQuotaRequest request = new CreateQuotaRequest();
-        request.setAmount(new BigDecimal(20));
-        request.setType("badType");
-        request.setEndDate(new Date());
-
+        String reqBody = "{\"type\":\"badType\",\"amount\":20,\"endDate\":\"2023-09-06T15:45:43.681Z\"}";
         mvc.perform(MockMvcRequestBuilders
                 .post("/sims/{id}/quota/add", 2)
-                .content(objectMapper.writeValueAsString(request))
+                .content(reqBody)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
@@ -140,8 +135,8 @@ public class SimControllerTest {
     public void addQuota_badAmountZero() throws Exception {
         CreateQuotaRequest request = new CreateQuotaRequest();
         request.setAmount(new BigDecimal(0));
-        request.setType("badType");
-        request.setEndDate(new Date());
+        request.setType(SimQuotaType.VOICE);
+        request.setEndDate(OffsetDateTime.now());
 
         mvc.perform(MockMvcRequestBuilders
                 .post("/sims/{id}/quota/add", 2)
@@ -156,8 +151,8 @@ public class SimControllerTest {
     public void addQuota_badAmountNegative() throws Exception {
         CreateQuotaRequest request = new CreateQuotaRequest();
         request.setAmount(new BigDecimal(-1));
-        request.setType("badType");
-        request.setEndDate(new Date());
+        request.setType(SimQuotaType.VOICE);
+        request.setEndDate(OffsetDateTime.now());
 
         mvc.perform(MockMvcRequestBuilders
                 .post("/sims/{id}/quota/add", 2)
@@ -170,13 +165,15 @@ public class SimControllerTest {
 
     @Test
     public void consumeQuota_mainSuccess() throws Exception {
-        ConsumeQuotaRequest request = new ConsumeQuotaRequest();
-        request.setAmount(new BigDecimal(20));
-        request.setType("voice");
+        var request = ConsumeQuotaRequest.builder()
+                .amount(new BigDecimal(20))
+                .type(SimQuotaType.VOICE)
+                .build();
 
+        String body = objectMapper.writeValueAsString(request);
         mvc.perform(MockMvcRequestBuilders
                 .post("/sims/{id}/quota/consume", 2)
-                .content(objectMapper.writeValueAsString(request))
+                .content(body)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -188,9 +185,10 @@ public class SimControllerTest {
 
     @Test
     public void consumeQuota_badAmount() throws Exception {
-        ConsumeQuotaRequest request = new ConsumeQuotaRequest();
-        request.setAmount(new BigDecimal(-1));
-        request.setType("voice");
+        var request = ConsumeQuotaRequest.builder()
+                .amount(new BigDecimal(-1))
+                .type(SimQuotaType.VOICE)
+                .build();
 
         mvc.perform(MockMvcRequestBuilders
                 .post("/sims/{id}/quota/consume", 2)
@@ -202,13 +200,10 @@ public class SimControllerTest {
 
     @Test
     public void consumeQuota_badType() throws Exception {
-        ConsumeQuotaRequest request = new ConsumeQuotaRequest();
-        request.setAmount(new BigDecimal(1));
-        request.setType("badType");
-
+        String reqBody = "{\"type\":\"badType\",\"amount\":1}";
         mvc.perform(MockMvcRequestBuilders
                 .post("/sims/{id}/quota/consume", 2)
-                .content(objectMapper.writeValueAsString(request))
+                .content(reqBody)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());

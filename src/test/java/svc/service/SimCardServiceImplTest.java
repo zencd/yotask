@@ -1,5 +1,6 @@
 package svc.service;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -7,6 +8,8 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.Assert;
 import svc.dto.ConsumeQuotaRequest;
 import svc.dto.CreateQuotaRequest;
 import svc.dto.SimQuotaInfo;
@@ -15,6 +18,7 @@ import svc.entity.SimCardStatus;
 import svc.entity.SimQuota;
 import svc.entity.SimQuotaType;
 import svc.exception.NotFoundException;
+import svc.mapper.SimQuotaMapperImpl;
 import svc.repository.SimCardRepository;
 import svc.repository.SimQuotaRepository;
 
@@ -47,6 +51,15 @@ public class SimCardServiceImplTest {
     @Mock
     private SimQuotaRepository simQuotaRepository;
 
+    @InjectMocks
+    SimQuotaMapperImpl simQuotaMapper;
+
+    @Before
+    public void beforeEach() {
+        Assert.isTrue(simQuotaMapper != null, "self check");
+        ReflectionTestUtils.setField(simCardService, "simQuotaMapper", simQuotaMapper);
+    }
+
     @Test
     public void activateSim_statusChanged() {
         SimCard sim = new SimCard();
@@ -66,8 +79,8 @@ public class SimCardServiceImplTest {
     public void getQuotaAvailable() {
         SimCard sim = new SimCard();
         when(simCardRepository.findById(555L)).thenReturn(Optional.of(sim));
-        when(simQuotaRepository.sumQuota(any(), eq(SimQuotaType.TRAFFIC), any())).thenReturn(new BigDecimal(100));
-        when(simQuotaRepository.sumQuota(any(), eq(SimQuotaType.VOICE), any())).thenReturn(new BigDecimal(500));
+        when(simQuotaRepository.sumQuota(any(), eq(SimQuotaType.TRAFFIC), any())).thenReturn(Optional.of(new BigDecimal(100)));
+        when(simQuotaRepository.sumQuota(any(), eq(SimQuotaType.VOICE), any())).thenReturn(Optional.of(new BigDecimal(500)));
 
         SimQuotaInfo info = simCardService.getQuotaAvailable(555L);
 
@@ -83,7 +96,7 @@ public class SimCardServiceImplTest {
         CreateQuotaRequest request = new CreateQuotaRequest();
         request.simId = 555L;
         request.amount = BigDecimal.valueOf(123);
-        request.typeObj = SimQuotaType.TRAFFIC;
+        request.type = SimQuotaType.TRAFFIC;
         simCardService.createQuota(request);
 
         ArgumentCaptor<SimQuota> ac = ArgumentCaptor.forClass(SimQuota.class);

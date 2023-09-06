@@ -1,11 +1,10 @@
 package svc.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public enum SimQuotaType {
 
@@ -29,10 +28,11 @@ public enum SimQuotaType {
     }
 
     @JsonValue
-    public int toValue() {
-        return intValue;
+    public String jsonValue() {
+        return code;
     }
 
+    @JsonCreator
     public static SimQuotaType fromCode(String code) {
         return Helper.BY_CODE.get(code);
     }

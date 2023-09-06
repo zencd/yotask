@@ -9,12 +9,8 @@ import svc.entity.SimQuota;
 import java.util.List;
 
 public interface SimCardService {
-    void activateSim(long simId, boolean enabled);
 
-    /**
-     * For development only.
-     */
-    List<SimCard> getAllSims();
+    void activateSim(long simId, boolean enabled);
 
     SimQuotaInfo getQuotaAvailable(long simId);
 

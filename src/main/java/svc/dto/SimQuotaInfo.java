@@ -1,48 +1,28 @@
 package svc.dto;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-/**
- * Info about quota available to a SIM card.
- */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Schema(description = "Info about quota available to a SIM card")
 public class SimQuotaInfo {
-    /**
-     * Amount of minutes available.
-     */
-    @ApiModelProperty(value = "Число минут")
+
+    @Schema(description = "Число доступных минут")
     public BigDecimal minutes;
 
-    /**
+    /*
      * Amount of internet traffic available.
      * GB looks not too precise enough.
      * MB looks just fine now.
      */
-    @ApiModelProperty(value = "Количество интернет-трафика, МБ")
+    @Schema(description = "Количество доступного интернет-трафика, МБ")
     public BigDecimal megabytes;
-
-    public SimQuotaInfo() {
-    }
-
-    public SimQuotaInfo(BigDecimal minutes, BigDecimal megabytes) {
-        this.minutes = minutes;
-        this.megabytes = megabytes;
-    }
-
-    public BigDecimal getMinutes() {
-        return minutes;
-    }
-
-    public void setMinutes(BigDecimal minutes) {
-        this.minutes = minutes;
-    }
-
-    public BigDecimal getMegabytes() {
-        return megabytes;
-    }
-
-    public void setMegabytes(BigDecimal megabytes) {
-        this.megabytes = megabytes;
-    }
 }
