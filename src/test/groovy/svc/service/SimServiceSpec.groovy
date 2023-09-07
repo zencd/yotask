@@ -30,7 +30,7 @@ class SimServiceSpec extends Specification {
 
         where:
         id | statusWas              | enabled | statusGot
-        1  | SimCardStatus.DISABLED | true | SimCardStatus.ENABLED
+        1  | SimCardStatus.DISABLED | true    | SimCardStatus.ENABLED
         2  | SimCardStatus.DISABLED | false   | SimCardStatus.DISABLED
         3  | SimCardStatus.ENABLED  | true    | SimCardStatus.ENABLED
         4  | SimCardStatus.ENABLED  | false   | SimCardStatus.DISABLED
