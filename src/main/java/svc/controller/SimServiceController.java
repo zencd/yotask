@@ -16,7 +16,8 @@ import svc.dto.ConsumeQuotaRequest;
 import svc.dto.CreateQuotaRequest;
 import svc.dto.SimQuota;
 import svc.dto.SimQuotaAvailable;
-import svc.service.SimCardService;
+import svc.service.QuotaService;
+import svc.service.SimService;
 
 /**
  * Rest controller for managing sim cards and their quotas.
@@ -25,9 +26,10 @@ import svc.service.SimCardService;
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class SimController {
+public class SimServiceController {
 
-    SimCardService simCardService;
+    SimService simService;
+    QuotaService quotaService;
 
     @PostMapping("/sims/{id}/quota/add")
     @Operation(summary = "Начислять пакеты минут и гигабайтов, имеющих время жизни")
@@ -36,7 +38,7 @@ public class SimController {
             @RequestBody @Valid CreateQuotaRequest request) {
         log.info("addQuota() requested with simId: {}", simId);
         request.setSimId(simId);
-        return simCardService.createQuota(request);
+        return quotaService.createQuota(request);
     }
 
     @PostMapping("/sims/{id}/quota/consume")
@@ -46,7 +48,7 @@ public class SimController {
             @RequestBody @Valid ConsumeQuotaRequest request) {
         log.info("consumeQuota() requested with simId: {}", simId);
         request.setSimId(simId);
-        simCardService.consumeQuota(request);
+        quotaService.consumeQuota(request);
     }
 
     @GetMapping("/sims/{id}/quota/available")
@@ -54,7 +56,7 @@ public class SimController {
     public SimQuotaAvailable getQuotaAvailable(
             @PathVariable("id") long simId) {
         log.info("getQuotaAvailable() requested with simId: {}", simId);
-        return simCardService.getQuotaAvailable(simId);
+        return quotaService.getQuotaAvailable(simId);
     }
 
     @PostMapping("/sims/{id}/activate")
@@ -63,6 +65,6 @@ public class SimController {
             @PathVariable("id") long simId,
             @RequestParam("enabled") boolean enabled) {
         log.info("activateSim() requested with simId: {}, enabled: {}", simId, enabled);
-        simCardService.activateSim(simId, enabled);
+        simService.activateSim(simId, enabled);
     }
 }

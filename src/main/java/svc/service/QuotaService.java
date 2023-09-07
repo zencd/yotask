@@ -5,9 +5,7 @@ import svc.dto.CreateQuotaRequest;
 import svc.dto.SimQuota;
 import svc.dto.SimQuotaAvailable;
 
-public interface SimCardService {
-
-    void activateSim(long simId, boolean enabled);
+public interface QuotaService {
 
     SimQuotaAvailable getQuotaAvailable(long simId);
 

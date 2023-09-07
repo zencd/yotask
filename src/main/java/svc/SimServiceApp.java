@@ -9,5 +9,4 @@ public class SimServiceApp {
 	public static void main(String[] args) {
 		SpringApplication.run(SimServiceApp.class, args);
 	}
-
 }

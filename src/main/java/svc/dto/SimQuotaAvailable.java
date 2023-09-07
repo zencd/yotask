@@ -19,8 +19,8 @@ import java.math.BigDecimal;
 public class SimQuotaAvailable {
 
     @Schema(description = "Число доступных минут")
-    BigDecimal minutes;
+    BigDecimal voice;
 
     @Schema(description = "Доступный интернет-трафик, МБ")
-    BigDecimal megabytes;
+    BigDecimal traffic;
 }

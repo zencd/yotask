@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import svc.service.SimCardService;
+import svc.service.QuotaService;
 
 /**
  * Scheduled tasks.
@@ -14,10 +14,10 @@ import svc.service.SimCardService;
 public class ScheduleConfig {
 
     @Autowired
-    SimCardService simCardService;
+    QuotaService quotaService;
 
     @Scheduled(fixedDelay = 60_000, initialDelay = 60_000) // millis
     public void disableStaleQuotas() {
-        simCardService.disableStaleQuotas();
+        quotaService.disableStaleQuotas();
     }
 }

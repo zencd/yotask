@@ -12,7 +12,6 @@ import svc.dto.CreateQuotaRequest;
 import svc.dto.SimQuota;
 import svc.dto.SimQuotaAvailable;
 import svc.entity.SimCardEntity;
-import svc.entity.SimCardStatus;
 import svc.entity.SimQuotaEntity;
 import svc.dto.SimQuotaType;
 import svc.exception.NotFoundException;
@@ -25,23 +24,17 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 /**
- * A service managing sim cards.
+ * A service managing sim card quota.
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class SimCardServiceImpl implements SimCardService {
+public class QuotaServiceImpl implements QuotaService {
 
     SimCardRepository simCardRepository;
     SimQuotaRepository simQuotaRepository;
     SimQuotaMapper simQuotaMapper;
-
-    public void activateSim(long simId, boolean enabled) {
-        SimCardEntity sim = simCardRepository.findById(simId).orElseThrow(NotFoundException::new);
-        sim.setStatus(SimCardStatus.of(enabled));
-        simCardRepository.save(sim);
-    }
 
     @Override
     public SimQuotaAvailable getQuotaAvailable(long simId) {
@@ -50,8 +43,8 @@ public class SimCardServiceImpl implements SimCardService {
         BigDecimal voiceBalance = simQuotaRepository.sumQuota(sim, SimQuotaType.VOICE, now).orElse(BigDecimal.ZERO);
         BigDecimal trafficBalance = simQuotaRepository.sumQuota(sim, SimQuotaType.TRAFFIC, now).orElse(BigDecimal.ZERO);
         return SimQuotaAvailable.builder()
-                .megabytes(trafficBalance)
-                .minutes(voiceBalance)
+                .traffic(trafficBalance)
+                .voice(voiceBalance)
                 .build();
     }
 
