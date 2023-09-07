@@ -1,8 +1,6 @@
 package svc
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.hamcrest.Matcher
-import org.hamcrest.core.IsNull
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -26,7 +24,6 @@ import java.time.ZoneOffset
 
 import static org.hamcrest.Matchers.is
 import static org.hamcrest.Matchers.notNullValue
-import static org.junit.jupiter.api.Assertions.assertEquals
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -39,8 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ComponentTest {
 
-	private static final Matcher<Object> NULL = IsNull.nullValue()
 	private static final OffsetDateTime FAR_DATE = OffsetDateTime.of(2099, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC)
+	private static final String MSISDN = '79990000001'
 
 	@Autowired
 	private MockMvc mvc
@@ -60,7 +57,7 @@ class ComponentTest {
 
 	@Test
 	void 'addQuota, main success'() throws Exception {
-		SimCardEntity sim = new SimCardEntity(msisdn: "79990000001")
+		SimCardEntity sim = new SimCardEntity(msisdn: MSISDN)
 		simCardRepository.save(sim)
 
 		var request = new CreateQuotaRequest(amount: 20, type: SimQuotaType.VOICE, endDate: OffsetDateTime.now())
@@ -84,13 +81,13 @@ class ComponentTest {
 	void 'consumeQuota, main success'() throws Exception {
 		var now = OffsetDateTime.now()
 
-		var sim = new SimCardEntity(msisdn: '79990000001')
+		var sim = new SimCardEntity(msisdn: MSISDN)
 		simCardRepository.save(sim)
 
 		var quota = new SimQuotaEntity(
 				simCard: sim,
 				type: SimQuotaType.VOICE,
-				balance: new BigDecimal(100),
+				balance: 100,
 				status: SimQuotaStatus.ENABLED,
 				lastUpdated: now,
 				dateCreated: now,
@@ -106,21 +103,22 @@ class ComponentTest {
 				.andExpect(status().isOk())
 				.andExpect(content().string(""))
 
-		quota = simQuotaRepository.findById(quota.id).orElseThrow()
-		assertEquals(new BigDecimal("90.00"), quota.balance)
+		simQuotaRepository.findById(quota.id).orElseThrow().with {
+			assert balance == 90
+		}
 	}
 
 	@Test
 	void 'getQuotaAvailable, main success'() throws Exception {
 		var now = OffsetDateTime.now()
 
-		var sim = new SimCardEntity(msisdn: '79990000001')
+		var sim = new SimCardEntity(msisdn: MSISDN)
 		simCardRepository.save(sim)
 
 		var quotaVoice = new SimQuotaEntity(
 				simCard: sim,
 				type: SimQuotaType.VOICE,
-				balance: new BigDecimal(100),
+				balance: 100,
 				status: SimQuotaStatus.ENABLED,
 				lastUpdated: now,
 				dateCreated: now,
@@ -130,7 +128,7 @@ class ComponentTest {
 		var quotaTraffic = new SimQuotaEntity(
 				simCard: sim,
 				type: SimQuotaType.TRAFFIC,
-				balance: new BigDecimal(200),
+				balance: 200,
 				status: SimQuotaStatus.ENABLED,
 				lastUpdated: now,
 				dateCreated: now,
@@ -148,7 +146,7 @@ class ComponentTest {
 
 	@Test
 	void 'activateSim, disable'() throws Exception {
-		var sim = new SimCardEntity(status: SimCardStatus.ENABLED, msisdn: '79990000001')
+		var sim = new SimCardEntity(status: SimCardStatus.ENABLED, msisdn: MSISDN)
 		simCardRepository.save(sim)
 
 		mvc.perform(MockMvcRequestBuilders
@@ -159,13 +157,14 @@ class ComponentTest {
 				.andExpect(status().isOk())
 				.andExpect(content().string(""))
 
-		sim = simCardRepository.findById(sim.id).orElseThrow()
-		assertEquals(SimCardStatus.DISABLED, sim.status)
+		simCardRepository.findById(sim.id).orElseThrow().with {
+			assert status == SimCardStatus.DISABLED
+		}
 	}
 
 	@Test
 	void 'activateSim, enable'() throws Exception {
-		var sim = new SimCardEntity(status: SimCardStatus.DISABLED, msisdn: "79990000001")
+		var sim = new SimCardEntity(status: SimCardStatus.DISABLED, msisdn: MSISDN)
 		simCardRepository.save(sim)
 
 		mvc.perform(MockMvcRequestBuilders
@@ -176,7 +175,8 @@ class ComponentTest {
 				.andExpect(status().isOk())
 				.andExpect(content().string(""))
 
-		sim = simCardRepository.findById(sim.id).orElseThrow()
-		assertEquals(SimCardStatus.ENABLED, sim.status)
+		simCardRepository.findById(sim.id).orElseThrow().with {
+			assert status == SimCardStatus.ENABLED
+		}
 	}
 }

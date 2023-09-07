@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 /**
- * Тесты на валидацию. С поднятием контекста, без БД, моки не требуются.
+ * Тесты на валидацию, это требует поднятия контекста.
  */
 @WebMvcTest(SimServiceController.class)
 class SimServiceControllerTest {
@@ -62,7 +62,7 @@ class SimServiceControllerTest {
     @Test
     void 'addQuota, zero amount'() throws Exception {
         var request = new CreateQuotaRequest(
-                amount: new BigDecimal(0),
+                amount: 0,
                 type: SimQuotaType.VOICE,
                 endDate: OffsetDateTime.now())
         mvc.perform(MockMvcRequestBuilders
@@ -76,7 +76,7 @@ class SimServiceControllerTest {
     @Test
     void 'addQuota, negative amount'() throws Exception {
         var request = new CreateQuotaRequest(
-                amount: new BigDecimal(-1),
+                amount: -1,
                 type: SimQuotaType.VOICE,
                 endDate: OffsetDateTime.now())
         mvc.perform(MockMvcRequestBuilders
@@ -88,9 +88,9 @@ class SimServiceControllerTest {
     }
 
     @Test
-    void 'consumeQuota, incorrect amount'() throws Exception {
+    void 'consumeQuota, zero amount'() throws Exception {
         var request = new ConsumeQuotaRequest(
-                amount: new BigDecimal(-1),
+                amount: 0,
                 type: SimQuotaType.VOICE)
         mvc.perform(MockMvcRequestBuilders
                 .post("/sims/{id}/quota/consume", 2)
@@ -112,7 +112,7 @@ class SimServiceControllerTest {
     }
 
     @Test
-    void 'getQuotaAvailable, nonexistent sim id leads to 404'() throws Exception {
+    void 'getQuotaAvailable, nonexistent simId leads to 404'() throws Exception {
         given(quotaService.getQuotaAvailable(999999))
                 .willThrow(NotFoundException.class)
         mvc.perform(MockMvcRequestBuilders

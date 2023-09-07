@@ -4,7 +4,6 @@ import org.mapstruct.factory.Mappers
 import spock.lang.Specification
 import svc.dto.ConsumeQuotaRequest
 import svc.dto.CreateQuotaRequest
-import svc.dto.SimQuotaAvailable
 import svc.dto.SimQuotaStatus
 import svc.dto.SimQuotaType
 import svc.entity.SimCardEntity
@@ -32,14 +31,14 @@ class QuotaServiceSpec extends Specification {
         def sim = new SimCardEntity()
 
         when:
-        SimQuotaAvailable info = simCardService.getQuotaAvailable(555)
+        def info = simCardService.getQuotaAvailable(555)
 
         then:
         assert info.traffic == 100
         assert info.voice == 500
         1 * simCardRepository.findById(555) >> Optional.of(sim)
-        1 * simQuotaRepository.sumQuota(_, SimQuotaType.TRAFFIC, _) >> Optional.of(new BigDecimal(100))
-        1 * simQuotaRepository.sumQuota(_, SimQuotaType.VOICE, _) >> Optional.of(new BigDecimal(500))
+        1 * simQuotaRepository.sumQuota(_, SimQuotaType.TRAFFIC, _) >> Optional.of(100.toBigDecimal())
+        1 * simQuotaRepository.sumQuota(_, SimQuotaType.VOICE, _) >> Optional.of(500.toBigDecimal())
         0 * _
     }
 
