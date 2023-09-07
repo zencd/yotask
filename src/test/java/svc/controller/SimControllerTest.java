@@ -88,33 +88,32 @@ public class SimControllerTest {
 
     @Test
     public void addQuota_mainSuccess() throws Exception {
-        CreateQuotaRequest request = new CreateQuotaRequest();
-        request.setAmount(new BigDecimal(20));
-        request.setType(SimQuotaType.VOICE);
-        request.setEndDate(OffsetDateTime.now());
+        var request = CreateQuotaRequest.builder()
+                .amount(new BigDecimal(20))
+                .type(SimQuotaType.VOICE)
+                .endDate(OffsetDateTime.now())
+                .build();
 
-        SimQuota response = SimQuota.builder()
+        var response = SimQuota.builder()
                 .id(500)
                 .balance(BigDecimal.valueOf(123))
                 .type(SimQuotaType.TRAFFIC)
                 .status(SimQuotaStatus.ENABLED)
                 .build();
 
-        given(simCardService.createQuota(any()))
-                .willReturn(response);
+        given(simCardService.createQuota(any())).willReturn(response);
 
         mvc.perform(MockMvcRequestBuilders
-                .post("/sims/{id}/quota/add", 2)
-                .content(objectMapper.writeValueAsString(request))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                        .post("/sims/{id}/quota/add", 2)
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(500)))
                 .andExpect(jsonPath("$.status", is(1)))
                 .andExpect(jsonPath("$.balance", is(123)))
                 .andExpect(jsonPath("$.endDate", is(NULL)))
-                .andExpect(jsonPath("$.simCard", is(NULL)))
-        ;
+                .andExpect(jsonPath("$.simCard", is(NULL)));
     }
 
     @Test
@@ -125,17 +124,16 @@ public class SimControllerTest {
                 .content(reqBody)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError())
-        ;
+                .andExpect(status().is4xxClientError());
     }
 
     @Test
     public void addQuota_badAmountZero() throws Exception {
-        CreateQuotaRequest request = new CreateQuotaRequest();
-        request.setAmount(new BigDecimal(0));
-        request.setType(SimQuotaType.VOICE);
-        request.setEndDate(OffsetDateTime.now());
-
+        var request = CreateQuotaRequest.builder()
+                .amount(new BigDecimal(0))
+                .type(SimQuotaType.VOICE)
+                .endDate(OffsetDateTime.now())
+                .build();
         mvc.perform(MockMvcRequestBuilders
                 .post("/sims/{id}/quota/add", 2)
                 .content(objectMapper.writeValueAsString(request))
@@ -147,11 +145,11 @@ public class SimControllerTest {
 
     @Test
     public void addQuota_badAmountNegative() throws Exception {
-        CreateQuotaRequest request = new CreateQuotaRequest();
-        request.setAmount(new BigDecimal(-1));
-        request.setType(SimQuotaType.VOICE);
-        request.setEndDate(OffsetDateTime.now());
-
+        var request = CreateQuotaRequest.builder()
+                .amount(new BigDecimal(-1))
+                .type(SimQuotaType.VOICE)
+                .endDate(OffsetDateTime.now())
+                .build();
         mvc.perform(MockMvcRequestBuilders
                 .post("/sims/{id}/quota/add", 2)
                 .content(objectMapper.writeValueAsString(request))
@@ -167,7 +165,6 @@ public class SimControllerTest {
                 .amount(new BigDecimal(20))
                 .type(SimQuotaType.VOICE)
                 .build();
-
         String body = objectMapper.writeValueAsString(request);
         mvc.perform(MockMvcRequestBuilders
                 .post("/sims/{id}/quota/consume", 2)
@@ -187,7 +184,6 @@ public class SimControllerTest {
                 .amount(new BigDecimal(-1))
                 .type(SimQuotaType.VOICE)
                 .build();
-
         mvc.perform(MockMvcRequestBuilders
                 .post("/sims/{id}/quota/consume", 2)
                 .content(objectMapper.writeValueAsString(request))
@@ -220,8 +216,7 @@ public class SimControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.minutes", is(200)))
-                .andExpect(jsonPath("$.megabytes", is(300)))
-        ;
+                .andExpect(jsonPath("$.megabytes", is(300)));
     }
 
     @Test

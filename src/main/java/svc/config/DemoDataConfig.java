@@ -39,14 +39,14 @@ public class DemoDataConfig {
                 .simCard(sim)
                 .type(SimQuotaType.VOICE)
                 .balance(new BigDecimal(60))
-                .endDate(OffsetDateTime.of(2021, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
+                .endDate(OffsetDateTime.of(2099, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
                 .build());
 
         simQuotaRepository.save(SimQuota.builder()
                 .simCard(sim)
                 .type(SimQuotaType.TRAFFIC)
                 .balance(new BigDecimal(2048))
-                .endDate(OffsetDateTime.of(2021, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
+                .endDate(OffsetDateTime.of(2099, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
                 .build());
     }
 
