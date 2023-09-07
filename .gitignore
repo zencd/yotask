@@ -17,3 +17,4 @@
 *.ipr
 
 /.gradle
+.java-version

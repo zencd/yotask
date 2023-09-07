@@ -26,7 +26,7 @@
 
 ## Implementation
 
-- Java 17
+- Java 17/20 are ok
 - Spring Boot 3.1
 - H2 in-memory DB used
 
