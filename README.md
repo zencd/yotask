@@ -31,12 +31,11 @@
 - Java 17/20 are ok
 - Spring Boot 3.1
 - Validation
-- H2 DB
-- H2 console
+- H2 DB with UI
 - Gradle 7
 - Lombok
 - Mapstruct
-- JUnit 4
+- JUnit 5, Spock 2.3
 - OpenApi v3 with UI, code-first
 
 ## Run
