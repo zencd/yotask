@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 /**
- * Тесты на валидацию. С поднятием контекста, с моками, без БД.
+ * Тесты на валидацию. С поднятием контекста, без БД, моки не требуются.
  */
 @WebMvcTest(SimServiceController.class)
 class SimServiceControllerTest {
@@ -61,11 +61,10 @@ class SimServiceControllerTest {
 
     @Test
     void 'addQuota, zero amount'() throws Exception {
-        var request = CreateQuotaRequest.builder()
-                .amount(new BigDecimal(0))
-                .type(SimQuotaType.VOICE)
-                .endDate(OffsetDateTime.now())
-                .build()
+        var request = new CreateQuotaRequest(
+                amount: new BigDecimal(0),
+                type: SimQuotaType.VOICE,
+                endDate: OffsetDateTime.now())
         mvc.perform(MockMvcRequestBuilders
                 .post("/sims/{id}/quota/add", 2)
                 .content(objectMapper.writeValueAsString(request))
@@ -76,11 +75,10 @@ class SimServiceControllerTest {
 
     @Test
     void 'addQuota, negative amount'() throws Exception {
-        var request = CreateQuotaRequest.builder()
-                .amount(new BigDecimal(-1))
-                .type(SimQuotaType.VOICE)
-                .endDate(OffsetDateTime.now())
-                .build()
+        var request = new CreateQuotaRequest(
+                amount: new BigDecimal(-1),
+                type: SimQuotaType.VOICE,
+                endDate: OffsetDateTime.now())
         mvc.perform(MockMvcRequestBuilders
                 .post("/sims/{id}/quota/add", 2)
                 .content(objectMapper.writeValueAsString(request))
@@ -91,10 +89,9 @@ class SimServiceControllerTest {
 
     @Test
     void 'consumeQuota, incorrect amount'() throws Exception {
-        var request = ConsumeQuotaRequest.builder()
-                .amount(new BigDecimal(-1))
-                .type(SimQuotaType.VOICE)
-                .build()
+        var request = new ConsumeQuotaRequest(
+                amount: new BigDecimal(-1),
+                type: SimQuotaType.VOICE)
         mvc.perform(MockMvcRequestBuilders
                 .post("/sims/{id}/quota/consume", 2)
                 .content(objectMapper.writeValueAsString(request))

@@ -5,6 +5,7 @@ import spock.lang.Specification
 import svc.dto.ConsumeQuotaRequest
 import svc.dto.CreateQuotaRequest
 import svc.dto.SimQuotaAvailable
+import svc.dto.SimQuotaStatus
 import svc.dto.SimQuotaType
 import svc.entity.SimCardEntity
 import svc.entity.SimQuotaEntity
@@ -48,15 +49,23 @@ class QuotaServiceSpec extends Specification {
 
         when:
         def request = new CreateQuotaRequest(simId: 555, amount: 123, type: SimQuotaType.TRAFFIC)
-        simCardService.createQuota(request)
+        def result = simCardService.createQuota(request)
 
         then:
+        result.balance == 123
+        result.dateCreated == null
+        result.endDate == null
+        result.id == 222
+        result.lastUpdated == null
+        result.status == SimQuotaStatus.ENABLED
+        result.type == SimQuotaType.TRAFFIC
         1 * simCardRepository.findById(555) >> Optional.of(sim)
         1 * simQuotaRepository.save(_) >> { SimQuotaEntity quota ->
             assert quota.simCard == sim
             assert quota.type == SimQuotaType.TRAFFIC
             assert quota.balance == 123
             assert quota.endDate == null
+            quota.id = 222
         }
         0 * _
     }
@@ -64,9 +73,9 @@ class QuotaServiceSpec extends Specification {
     void 'consumeQuota, balance charged and something remains yet'() {
         given:
         def sim = new SimCardEntity()
-        def quota1 = SimQuotaEntity.builder().balance(10.toBigDecimal()).build()
-        def quota2 = SimQuotaEntity.builder().balance(10.toBigDecimal()).build()
-        def quota3 = SimQuotaEntity.builder().balance(10.toBigDecimal()).build()
+        def quota1 = new SimQuotaEntity(balance: 10)
+        def quota2 = new SimQuotaEntity(balance: 10)
+        def quota3 = new SimQuotaEntity(balance: 10)
 
         when:
         def request = new ConsumeQuotaRequest(simId: 555, amount: 20)
@@ -83,8 +92,8 @@ class QuotaServiceSpec extends Specification {
 
     void 'consumeQuota, the charge is small and the first quota is charged a little'() {
         given:
-        def quota1 = SimQuotaEntity.builder().balance(10.toBigDecimal()).build()
-        def quota2 = SimQuotaEntity.builder().balance(10.toBigDecimal()).build()
+        def quota1 = new SimQuotaEntity(balance: 10)
+        def quota2 = new SimQuotaEntity(balance: 10)
         def sim = new SimCardEntity()
 
         when:
@@ -102,8 +111,8 @@ class QuotaServiceSpec extends Specification {
 
     void 'consumeQuota, the charge is too big'() {
         given:
-        def quota1 = SimQuotaEntity.builder().balance(10.toBigDecimal()).build()
-        def quota2 = SimQuotaEntity.builder().balance(10.toBigDecimal()).build()
+        def quota1 = new SimQuotaEntity(balance: 10)
+        def quota2 = new SimQuotaEntity(balance: 10)
         def sim = new SimCardEntity()
 
         when:

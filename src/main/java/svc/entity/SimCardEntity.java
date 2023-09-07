@@ -13,13 +13,15 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
 
-@Entity
 @Data
-@AllArgsConstructor
+@Entity
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "sim_card")
 public class SimCardEntity {
     @Id
@@ -41,9 +43,6 @@ public class SimCardEntity {
 
     @Column(name = "last_updated")
     private OffsetDateTime lastUpdated;
-
-    public SimCardEntity() {
-    }
 
     @PrePersist
     protected void onCreate() {
