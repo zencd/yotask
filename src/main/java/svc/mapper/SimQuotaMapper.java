@@ -4,8 +4,9 @@ import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import svc.dto.CreateQuotaRequest;
-import svc.entity.SimCard;
-import svc.entity.SimQuota;
+import svc.dto.SimQuota;
+import svc.entity.SimCardEntity;
+import svc.entity.SimQuotaEntity;
 
 @Mapper(componentModel = "spring")
 public interface SimQuotaMapper {
@@ -15,6 +16,8 @@ public interface SimQuotaMapper {
     @Mapping(target = "type", source = "request.type")
     @Mapping(target = "balance", source = "request.amount")
     @Mapping(target = "endDate", source = "request.endDate")
-    SimQuota toSimQuota(CreateQuotaRequest request, SimCard simCard);
+    SimQuotaEntity toSimQuota(CreateQuotaRequest request, SimCardEntity simCard);
+
+    SimQuota toSimQuotaDto(SimQuotaEntity source);
 
 }

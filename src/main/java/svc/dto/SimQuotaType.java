@@ -19,7 +19,7 @@ public enum SimQuotaType {
 
     SimQuotaType(int intValue, String code) {
         if (ordinal() != intValue) {
-            // XXX Using EnumType.ORDINAL in entities, so make sure the enum values are not reordered randomly.
+            // XXX Using ordinal in DB, so make sure we won't lose correct mapping after enums reordered
             throw new IllegalArgumentException("The `intValue` must increment along with its ordinal");
         }
         this.intValue = intValue;

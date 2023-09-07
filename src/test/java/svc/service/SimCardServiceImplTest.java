@@ -12,10 +12,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.Assert;
 import svc.dto.ConsumeQuotaRequest;
 import svc.dto.CreateQuotaRequest;
-import svc.dto.SimQuotaInfo;
-import svc.entity.SimCard;
+import svc.dto.SimQuotaAvailable;
+import svc.entity.SimCardEntity;
 import svc.entity.SimCardStatus;
-import svc.entity.SimQuota;
+import svc.entity.SimQuotaEntity;
 import svc.dto.SimQuotaType;
 import svc.exception.NotFoundException;
 import svc.mapper.SimQuotaMapperImpl;
@@ -62,14 +62,14 @@ public class SimCardServiceImplTest {
 
     @Test
     public void activateSim_statusChanged() {
-        SimCard sim = new SimCard();
+        SimCardEntity sim = new SimCardEntity();
         sim.setId(100L);
         sim.setStatus(SimCardStatus.DISABLED);
         when(simCardRepository.findById(100L)).thenReturn(Optional.of(sim));
 
         simCardService.activateSim(100L, true);
 
-        SimCard sim2 = new SimCard();
+        SimCardEntity sim2 = new SimCardEntity();
         sim2.setId(100L);
         sim2.setStatus(SimCardStatus.ENABLED);
         verify(simCardRepository).save(sim2);
@@ -77,12 +77,12 @@ public class SimCardServiceImplTest {
 
     @Test
     public void getQuotaAvailable() {
-        SimCard sim = new SimCard();
+        SimCardEntity sim = new SimCardEntity();
         when(simCardRepository.findById(555L)).thenReturn(Optional.of(sim));
         when(simQuotaRepository.sumQuota(any(), eq(SimQuotaType.TRAFFIC), any())).thenReturn(Optional.of(new BigDecimal(100)));
         when(simQuotaRepository.sumQuota(any(), eq(SimQuotaType.VOICE), any())).thenReturn(Optional.of(new BigDecimal(500)));
 
-        SimQuotaInfo info = simCardService.getQuotaAvailable(555L);
+        SimQuotaAvailable info = simCardService.getQuotaAvailable(555L);
 
         assertEquals(new BigDecimal(100), info.getMegabytes());
         assertEquals(new BigDecimal(500), info.getMinutes());
@@ -90,16 +90,16 @@ public class SimCardServiceImplTest {
 
     @Test
     public void createQuota() {
-        SimCard sim = new SimCard();
+        SimCardEntity sim = new SimCardEntity();
         when(simCardRepository.findById(555L)).thenReturn(Optional.of(sim));
 
         CreateQuotaRequest request = new CreateQuotaRequest();
-        request.simId = 555L;
-        request.amount = BigDecimal.valueOf(123);
-        request.type = SimQuotaType.TRAFFIC;
+        request.setSimId(555L);
+        request.setAmount(BigDecimal.valueOf(123));
+        request.setType(SimQuotaType.TRAFFIC);
         simCardService.createQuota(request);
 
-        ArgumentCaptor<SimQuota> ac = ArgumentCaptor.forClass(SimQuota.class);
+        ArgumentCaptor<SimQuotaEntity> ac = ArgumentCaptor.forClass(SimQuotaEntity.class);
         verify(simQuotaRepository).save(ac.capture());
         assertSame(sim, ac.getValue().getSimCard());
         assertEquals(SimQuotaType.TRAFFIC, ac.getValue().getType());
@@ -111,19 +111,19 @@ public class SimCardServiceImplTest {
     public void consumeQuota_balanceChargedAndSomethingRemainsYet() {
         {
             // prepare: find sim
-            SimCard sim = new SimCard();
+            SimCardEntity sim = new SimCardEntity();
             when(simCardRepository.findById(555L)).thenReturn(Optional.of(sim));
         }
 
         {
             // prepare: find quotas
-            SimQuota q1 = new SimQuota() {{
+            SimQuotaEntity q1 = new SimQuotaEntity() {{
                 setBalance(BigDecimal.valueOf(10));
             }};
-            SimQuota q2 = new SimQuota() {{
+            SimQuotaEntity q2 = new SimQuotaEntity() {{
                 setBalance(BigDecimal.valueOf(10));
             }};
-            SimQuota q3 = new SimQuota() {{
+            SimQuotaEntity q3 = new SimQuotaEntity() {{
                 setBalance(BigDecimal.valueOf(10));
             }};
             when(simQuotaRepository.findAllActiveQuota(any(), any(), any())).thenReturn(Arrays.asList(q1, q2, q3));
@@ -132,17 +132,17 @@ public class SimCardServiceImplTest {
         {
             // actual invocation
             ConsumeQuotaRequest request = new ConsumeQuotaRequest();
-            request.simId = 555L;
-            request.amount = BigDecimal.valueOf(20);
+            request.setSimId(555L);
+            request.setAmount(BigDecimal.valueOf(20));
             simCardService.consumeQuota(request);
         }
 
         {
             // verify
             InOrder inOrder = inOrder(simQuotaRepository, simQuotaRepository);
-            ArgumentCaptor<SimQuota> ac = ArgumentCaptor.forClass(SimQuota.class);
+            ArgumentCaptor<SimQuotaEntity> ac = ArgumentCaptor.forClass(SimQuotaEntity.class);
             inOrder.verify(simQuotaRepository, times(2)).save(ac.capture());
-            List<SimQuota> qq = ac.getAllValues();
+            List<SimQuotaEntity> qq = ac.getAllValues();
             assertEquals(BigDecimal.ZERO, qq.get(0).getBalance());
             assertEquals(BigDecimal.ZERO, qq.get(1).getBalance());
         }
@@ -152,16 +152,16 @@ public class SimCardServiceImplTest {
     public void consumeQuota_theChargeIsSmallAndTheFirstQuotaIsChargedALittle() {
         {
             // prepare: find sim
-            SimCard sim = new SimCard();
+            SimCardEntity sim = new SimCardEntity();
             when(simCardRepository.findById(555L)).thenReturn(Optional.of(sim));
         }
 
         {
             // prepare: find quotas
-            SimQuota q1 = new SimQuota() {{
+            SimQuotaEntity q1 = new SimQuotaEntity() {{
                 setBalance(BigDecimal.valueOf(10));
             }};
-            SimQuota q2 = new SimQuota() {{
+            SimQuotaEntity q2 = new SimQuotaEntity() {{
                 setBalance(BigDecimal.valueOf(10));
             }};
             when(simQuotaRepository.findAllActiveQuota(any(), any(), any())).thenReturn(Arrays.asList(q1, q2));
@@ -170,17 +170,17 @@ public class SimCardServiceImplTest {
         {
             // actual invocation
             ConsumeQuotaRequest request = new ConsumeQuotaRequest();
-            request.simId = 555L;
-            request.amount = BigDecimal.valueOf(3);
+            request.setSimId(555L);
+            request.setAmount(BigDecimal.valueOf(3));
             simCardService.consumeQuota(request);
         }
 
         {
             // verify
             InOrder inOrder = inOrder(simQuotaRepository, simQuotaRepository);
-            ArgumentCaptor<SimQuota> ac = ArgumentCaptor.forClass(SimQuota.class);
+            ArgumentCaptor<SimQuotaEntity> ac = ArgumentCaptor.forClass(SimQuotaEntity.class);
             inOrder.verify(simQuotaRepository, times(1)).save(ac.capture());
-            List<SimQuota> qq = ac.getAllValues();
+            List<SimQuotaEntity> qq = ac.getAllValues();
             assertEquals(BigDecimal.valueOf(7), qq.get(0).getBalance());
         }
     }
@@ -189,16 +189,16 @@ public class SimCardServiceImplTest {
     public void consumeQuota_theChargeIsTooBig() {
         {
             // prepare: find sim
-            SimCard sim = new SimCard();
+            SimCardEntity sim = new SimCardEntity();
             when(simCardRepository.findById(555L)).thenReturn(Optional.of(sim));
         }
 
         {
             // prepare: find quotas
-            SimQuota q1 = new SimQuota() {{
+            SimQuotaEntity q1 = new SimQuotaEntity() {{
                 setBalance(BigDecimal.valueOf(10));
             }};
-            SimQuota q2 = new SimQuota() {{
+            SimQuotaEntity q2 = new SimQuotaEntity() {{
                 setBalance(BigDecimal.valueOf(10));
             }};
             when(simQuotaRepository.findAllActiveQuota(any(), any(), any())).thenReturn(Arrays.asList(q1, q2));
@@ -207,17 +207,17 @@ public class SimCardServiceImplTest {
         {
             // actual invocation
             ConsumeQuotaRequest request = new ConsumeQuotaRequest();
-            request.simId = 555L;
-            request.amount = BigDecimal.valueOf(100_000);
+            request.setSimId(555L);
+            request.setAmount(BigDecimal.valueOf(100_000));
             simCardService.consumeQuota(request);
         }
 
         {
             // verify
             InOrder inOrder = inOrder(simQuotaRepository, simQuotaRepository);
-            ArgumentCaptor<SimQuota> ac = ArgumentCaptor.forClass(SimQuota.class);
+            ArgumentCaptor<SimQuotaEntity> ac = ArgumentCaptor.forClass(SimQuotaEntity.class);
             inOrder.verify(simQuotaRepository, times(2)).save(ac.capture());
-            List<SimQuota> qq = ac.getAllValues();
+            List<SimQuotaEntity> qq = ac.getAllValues();
             assertEquals(BigDecimal.valueOf(0), qq.get(0).getBalance());
             assertEquals(BigDecimal.valueOf(0), qq.get(1).getBalance());
         }
@@ -227,7 +227,7 @@ public class SimCardServiceImplTest {
     public void consumeQuota_noQuotasExists() {
         {
             // prepare: find sim
-            SimCard sim = new SimCard();
+            SimCardEntity sim = new SimCardEntity();
             when(simCardRepository.findById(555L)).thenReturn(Optional.of(sim));
         }
 
@@ -239,8 +239,8 @@ public class SimCardServiceImplTest {
         {
             // actual invocation
             ConsumeQuotaRequest request = new ConsumeQuotaRequest();
-            request.simId = 555L;
-            request.amount = BigDecimal.valueOf(100_000);
+            request.setSimId(555L);
+            request.setAmount(BigDecimal.valueOf(100_000));
             simCardService.consumeQuota(request);
         }
 
@@ -252,12 +252,12 @@ public class SimCardServiceImplTest {
 
     @Test(expected = NotFoundException.class)
     public void consumeQuota_noSimFound() {
-        SimCard sim = new SimCard();
+        SimCardEntity sim = new SimCardEntity();
         when(simCardRepository.findById(555L)).thenReturn(Optional.ofNullable(null));
         //given(simCardService.consumeQuota(any())).willThrow(NotFoundException.class);
 
         ConsumeQuotaRequest request = new ConsumeQuotaRequest();
-        request.simId = 555L;
+        request.setSimId(555L);
         simCardService.consumeQuota(request);
     }
 

@@ -1,26 +1,16 @@
 package svc.entity;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import org.springframework.util.Assert;
 
 public enum SimCardStatus {
 
     DISABLED(0), ENABLED(1);
 
-    private int intValue;
     SimCardStatus(int intValue) {
-        if (ordinal() != intValue) {
-            // XXX Using EnumType.ORDINAL in entities, so make sure the enum values are not reordered randomly.
-            throw new IllegalArgumentException("The `intValue` must increment along with its ordinal");
-        }
-        this.intValue = intValue;
+        Assert.isTrue(ordinal() == intValue, "intValue must follow ordinal to keep DB mapping safe");
     }
 
-    @JsonValue
-    public int jsonValue() {
-        return intValue;
-    }
-
-    public static SimCardStatus fromBoolean(boolean enabled) {
+    public static SimCardStatus of(boolean enabled) {
         return enabled ? SimCardStatus.ENABLED : SimCardStatus.DISABLED;
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import svc.entity.SimCard;
+import svc.entity.SimCardEntity;
 import svc.repository.SimCardRepository;
 
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class DemoController {
 
     @GetMapping("/sims")
     @Operation(summary = "For development only.")
-    public List<SimCard> allSims() {
+    public List<SimCardEntity> allSims() {
         return simCardRepository.findAll();
     }
 }

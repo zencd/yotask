@@ -32,11 +32,11 @@ import java.time.OffsetDateTime;
 @Data
 @Entity
 @Table(name = "sim_quota")
-public class SimQuota {
+public class SimQuotaEntity {
 
     @Id
     @GeneratedValue
-    private long id;
+    private Long id;
 
     @Column(name = "status")
     @Enumerated(EnumType.ORDINAL)
@@ -60,7 +60,7 @@ public class SimQuota {
     @ManyToOne
     @JoinColumn(name = "sim_id")
     @NotNull
-    private SimCard simCard;
+    private SimCardEntity simCard;
 
     @Column(name = "date_created")
     private OffsetDateTime dateCreated;

@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import svc.service.SimCardService;
 
 /**
- * Tasks running by schedule.
+ * Scheduled tasks.
  */
 @Configuration
 @EnableScheduling

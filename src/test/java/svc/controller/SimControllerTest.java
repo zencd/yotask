@@ -16,9 +16,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import svc.dto.ConsumeQuotaRequest;
 import svc.dto.CreateQuotaRequest;
-import svc.dto.SimQuotaInfo;
-import svc.entity.SimQuota;
-import svc.entity.SimQuotaStatus;
+import svc.dto.SimQuota;
+import svc.dto.SimQuotaAvailable;
+import svc.dto.SimQuotaStatus;
 import svc.dto.SimQuotaType;
 import svc.exception.NotFoundException;
 import svc.repository.SimCardRepository;
@@ -58,7 +58,7 @@ public class SimControllerTest {
     @Test
     public void activateSim_enabling_ok() throws Exception {
         mvc.perform(MockMvcRequestBuilders
-                .get("/sims/111/activate")
+                .post("/sims/111/activate")
                 .param("enabled", "true")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -69,7 +69,7 @@ public class SimControllerTest {
     @Test
     public void activateSim_disabling_ok() throws Exception {
         mvc.perform(MockMvcRequestBuilders
-                .get("/sims/111/activate")
+                .post("/sims/111/activate")
                 .param("enabled", "false")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -88,20 +88,18 @@ public class SimControllerTest {
 
     @Test
     public void addQuota_mainSuccess() throws Exception {
+        given(simCardService.createQuota(any())).willReturn(SimQuota.builder()
+                .id(500L)
+                .balance(BigDecimal.valueOf(123))
+                .type(SimQuotaType.VOICE)
+                .status(SimQuotaStatus.ENABLED)
+                .build());
+
         var request = CreateQuotaRequest.builder()
                 .amount(new BigDecimal(20))
                 .type(SimQuotaType.VOICE)
                 .endDate(OffsetDateTime.now())
                 .build();
-
-        var response = SimQuota.builder()
-                .id(500)
-                .balance(BigDecimal.valueOf(123))
-                .type(SimQuotaType.TRAFFIC)
-                .status(SimQuotaStatus.ENABLED)
-                .build();
-
-        given(simCardService.createQuota(any())).willReturn(response);
 
         mvc.perform(MockMvcRequestBuilders
                         .post("/sims/{id}/quota/add", 2)
@@ -111,9 +109,11 @@ public class SimControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(500)))
                 .andExpect(jsonPath("$.status", is(1)))
+                .andExpect(jsonPath("$.type", is("voice")))
                 .andExpect(jsonPath("$.balance", is(123)))
                 .andExpect(jsonPath("$.endDate", is(NULL)))
-                .andExpect(jsonPath("$.simCard", is(NULL)));
+                .andExpect(jsonPath("$.dateCreated", is(NULL)))
+                .andExpect(jsonPath("$.lastUpdated", is(NULL)));
     }
 
     @Test
@@ -173,7 +173,6 @@ public class SimControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(""));
-        //verify(simCardService, atLeastOnce()).createQuota(any(CreateQuotaRequest.class));
         List<Invocation> invocations = (List<Invocation>) Mockito.mockingDetails(simCardService).getInvocations();
         assertEquals(1, invocations.size());
     }
@@ -205,7 +204,7 @@ public class SimControllerTest {
 
     @Test
     public void getQuotaAvailable_mainSuccess() throws Exception {
-        SimQuotaInfo response = new SimQuotaInfo(new BigDecimal(200), new BigDecimal(300));
+        SimQuotaAvailable response = new SimQuotaAvailable(new BigDecimal(200), new BigDecimal(300));
 
         given(simCardService.getQuotaAvailable(2L))
                 .willReturn(response);

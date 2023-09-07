@@ -21,10 +21,10 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 @Builder
 @Table(name = "sim_card")
-public class SimCard {
+public class SimCardEntity {
     @Id
     @GeneratedValue
-    private long id;
+    private Long id;
 
     @Column(name = "status")
     @Enumerated(EnumType.ORDINAL)
@@ -32,10 +32,7 @@ public class SimCard {
     @Builder.Default
     private SimCardStatus status = SimCardStatus.ENABLED;
 
-    /**
-     * Like "79001234567" for Russia.
-     */
-    @Column(length = 15)
+    @Column(length = 15, unique = true)
     @NotNull
     private String msisdn;
 
@@ -45,7 +42,7 @@ public class SimCard {
     @Column(name = "last_updated")
     private OffsetDateTime lastUpdated;
 
-    public SimCard() {
+    public SimCardEntity() {
     }
 
     @PrePersist

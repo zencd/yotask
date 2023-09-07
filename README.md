@@ -1,6 +1,8 @@
 # YOTASK
 
-![](logo.png)               
+![](logo.png)
+
+Адаптировано в 2023 для Java 17+, Spring Boot 3, gradle 7.
 
 ## Objective
 
@@ -28,7 +30,14 @@
 
 - Java 17/20 are ok
 - Spring Boot 3.1
-- H2 in-memory DB used
+- Validation
+- H2 DB
+- H2 console
+- Gradle 7
+- Lombok
+- Mapstruct
+- JUnit 4
+- OpenApi v3 with UI, code-first
 
 ## Run
 

@@ -9,10 +9,11 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import svc.dto.ConsumeQuotaRequest;
 import svc.dto.CreateQuotaRequest;
-import svc.dto.SimQuotaInfo;
-import svc.entity.SimCard;
+import svc.dto.SimQuota;
+import svc.dto.SimQuotaAvailable;
+import svc.entity.SimCardEntity;
 import svc.entity.SimCardStatus;
-import svc.entity.SimQuota;
+import svc.entity.SimQuotaEntity;
 import svc.dto.SimQuotaType;
 import svc.exception.NotFoundException;
 import svc.mapper.SimQuotaMapper;
@@ -37,18 +38,18 @@ public class SimCardServiceImpl implements SimCardService {
     SimQuotaMapper simQuotaMapper;
 
     public void activateSim(long simId, boolean enabled) {
-        SimCard sim = simCardRepository.findById(simId).orElseThrow(NotFoundException::new);
-        sim.setStatus(SimCardStatus.fromBoolean(enabled));
+        SimCardEntity sim = simCardRepository.findById(simId).orElseThrow(NotFoundException::new);
+        sim.setStatus(SimCardStatus.of(enabled));
         simCardRepository.save(sim);
     }
 
     @Override
-    public SimQuotaInfo getQuotaAvailable(long simId) {
-        SimCard sim = simCardRepository.findById(simId).orElseThrow(NotFoundException::new);
+    public SimQuotaAvailable getQuotaAvailable(long simId) {
+        SimCardEntity sim = simCardRepository.findById(simId).orElseThrow(NotFoundException::new);
         var now = OffsetDateTime.now();
         BigDecimal voiceBalance = simQuotaRepository.sumQuota(sim, SimQuotaType.VOICE, now).orElse(BigDecimal.ZERO);
         BigDecimal trafficBalance = simQuotaRepository.sumQuota(sim, SimQuotaType.TRAFFIC, now).orElse(BigDecimal.ZERO);
-        return SimQuotaInfo.builder()
+        return SimQuotaAvailable.builder()
                 .megabytes(trafficBalance)
                 .minutes(voiceBalance)
                 .build();
@@ -56,23 +57,21 @@ public class SimCardServiceImpl implements SimCardService {
 
     @Override
     public SimQuota createQuota(CreateQuotaRequest request) {
-        SimCard sim = simCardRepository.findById(request.simId).orElseThrow(NotFoundException::new);
-        SimQuota quota = simQuotaMapper.toSimQuota(request, sim);
+        SimCardEntity sim = simCardRepository.findById(request.getSimId()).orElseThrow(NotFoundException::new);
+        SimQuotaEntity quota = simQuotaMapper.toSimQuota(request, sim);
         simQuotaRepository.save(quota);
-        return quota;
+        return simQuotaMapper.toSimQuotaDto(quota);
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void consumeQuota(ConsumeQuotaRequest request) {
-        SimCard sim = simCardRepository.findById(request.simId).orElseThrow(NotFoundException::new);
+        SimCardEntity sim = simCardRepository.findById(request.getSimId()).orElseThrow(NotFoundException::new);
 
-        BigDecimal toChargeYet = request.amount;
+        BigDecimal toChargeYet = request.getAmount();
 
-        // XXX no algorithm given how to charge minutes/megabytes so do it in random order
-        // order by creation date maybe
-        List<SimQuota> quotas = simQuotaRepository.findAllActiveQuota(sim, request.type, OffsetDateTime.now());
-        for (SimQuota aQuota : quotas) {
+        List<SimQuotaEntity> quotas = simQuotaRepository.findAllActiveQuota(sim, request.getType(), OffsetDateTime.now());
+        for (SimQuotaEntity aQuota : quotas) {
             if (toChargeYet.compareTo(BigDecimal.ZERO) <= 0) {
                 break;
             }

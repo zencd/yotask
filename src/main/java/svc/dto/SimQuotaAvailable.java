@@ -1,10 +1,12 @@
 package svc.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 
@@ -12,17 +14,13 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Schema(description = "Info about quota available to a SIM card")
-public class SimQuotaInfo {
+public class SimQuotaAvailable {
 
     @Schema(description = "Число доступных минут")
-    public BigDecimal minutes;
+    BigDecimal minutes;
 
-    /*
-     * Amount of internet traffic available.
-     * GB looks not too precise enough.
-     * MB looks just fine now.
-     */
-    @Schema(description = "Количество доступного интернет-трафика, МБ")
-    public BigDecimal megabytes;
+    @Schema(description = "Доступный интернет-трафик, МБ")
+    BigDecimal megabytes;
 }

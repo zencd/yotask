@@ -5,11 +5,10 @@
  ___/ / / / / / / /  / /_/ / /_/ / /_/ / /_/ /_/ /   ___/ /  __/ /   | |/ / / /__/  __/
 /____/_/_/ /_/ /_/   \___\_\__,_/\____/\__/\__,_/   /____/\___/_/    |___/_/\___/\___/
 
-Swagger:
-<a href="http://localhost:8080/swagger-ui/index.html">http://localhost:8080/swagger-ui/index.html</a>
+<a href="http://localhost:8080/actuator">Actuator</a>
 
-H2 DB GUI, use URL "jdbc:h2:mem:demo_db"
-<a href="http://localhost:8080/h2-console">http://localhost:8080/h2-console</a>
+<a href="http://localhost:8080/swagger-ui/index.html">Swagger</a>
 
-There is a SIM with id=1 predefined
-<a href="http://localhost:8080/sims/1/quota/available">http://localhost:8080/sims/1/quota/available</a>
+<a href="http://localhost:8080/h2-console">H2 DB GUI</a>, use URL "jdbc:h2:mem:demo_db"
+
+<a href="http://localhost:8080/sims/1/quota/available">SIM with id=1 predefined</a>

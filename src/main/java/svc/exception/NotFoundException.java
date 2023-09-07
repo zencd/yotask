@@ -1,7 +1,7 @@
 package svc.exception;
 
 /**
- * Gonna force 404 error.
+ * Gonna lead to error 404.
  */
 public class NotFoundException extends RuntimeException {
 

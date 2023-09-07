@@ -6,10 +6,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import svc.dto.ConsumeQuotaRequest;
 import svc.dto.CreateQuotaRequest;
-import svc.dto.SimQuotaInfo;
-import svc.entity.SimQuota;
-import svc.exception.IncorrectRequestException;
-import svc.exception.NotFoundException;
+import svc.dto.SimQuota;
+import svc.dto.SimQuotaAvailable;
 import svc.service.SimCardService;
 
 /**
@@ -41,7 +35,7 @@ public class SimController {
             @PathVariable("id") long simId,
             @RequestBody @Valid CreateQuotaRequest request) {
         log.info("addQuota() requested with simId: {}", simId);
-        request.simId = simId;
+        request.setSimId(simId);
         return simCardService.createQuota(request);
     }
 
@@ -51,19 +45,19 @@ public class SimController {
             @PathVariable("id") long simId,
             @RequestBody @Valid ConsumeQuotaRequest request) {
         log.info("consumeQuota() requested with simId: {}", simId);
-        request.simId = simId;
+        request.setSimId(simId);
         simCardService.consumeQuota(request);
     }
 
     @GetMapping("/sims/{id}/quota/available")
     @Operation(summary = "Получать количество доступных минут и гигабайт")
-    public SimQuotaInfo getQuotaAvailable(
+    public SimQuotaAvailable getQuotaAvailable(
             @PathVariable("id") long simId) {
         log.info("getQuotaAvailable() requested with simId: {}", simId);
         return simCardService.getQuotaAvailable(simId);
     }
 
-    @GetMapping("/sims/{id}/activate")
+    @PostMapping("/sims/{id}/activate")
     @Operation(summary = "Активировать и блокировать сим-карты")
     public void activateSim(
             @PathVariable("id") long simId,
