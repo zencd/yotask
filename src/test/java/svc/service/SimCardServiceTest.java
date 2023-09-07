@@ -1,22 +1,22 @@
 package svc.service;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.Assert;
 import svc.dto.ConsumeQuotaRequest;
 import svc.dto.CreateQuotaRequest;
 import svc.dto.SimQuotaAvailable;
+import svc.dto.SimQuotaType;
 import svc.entity.SimCardEntity;
 import svc.entity.SimCardStatus;
 import svc.entity.SimQuotaEntity;
-import svc.dto.SimQuotaType;
 import svc.exception.NotFoundException;
 import svc.mapper.SimQuotaMapperImpl;
 import svc.repository.SimCardRepository;
@@ -28,9 +28,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
@@ -39,7 +40,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+/**
+ * Юнит-тест
+ */
+@Deprecated(forRemoval = true) // SimCardServiceSpec is the replacement
+@ExtendWith(MockitoExtension.class)
 public class SimCardServiceTest {
 
     @InjectMocks
@@ -54,13 +59,13 @@ public class SimCardServiceTest {
     @InjectMocks
     SimQuotaMapperImpl simQuotaMapper;
 
-    @Before
+    @BeforeEach
     public void beforeEach() {
         Assert.isTrue(simQuotaMapper != null, "self check");
         ReflectionTestUtils.setField(simCardService, "simQuotaMapper", simQuotaMapper);
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void activateSim_statusChanged() {
         SimCardEntity sim = new SimCardEntity();
         sim.setId(100L);
@@ -75,7 +80,7 @@ public class SimCardServiceTest {
         verify(simCardRepository).save(sim2);
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void getQuotaAvailable() {
         SimCardEntity sim = new SimCardEntity();
         when(simCardRepository.findById(555L)).thenReturn(Optional.of(sim));
@@ -88,7 +93,7 @@ public class SimCardServiceTest {
         assertEquals(new BigDecimal(500), info.getMinutes());
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void createQuota() {
         SimCardEntity sim = new SimCardEntity();
         when(simCardRepository.findById(555L)).thenReturn(Optional.of(sim));
@@ -107,7 +112,12 @@ public class SimCardServiceTest {
         assertNull(ac.getValue().getEndDate());
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
+    public void test() {
+
+    }
+
+    @org.junit.jupiter.api.Test
     public void consumeQuota_balanceChargedAndSomethingRemainsYet() {
         {
             // prepare: find sim
@@ -148,7 +158,7 @@ public class SimCardServiceTest {
         }
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void consumeQuota_theChargeIsSmallAndTheFirstQuotaIsChargedALittle() {
         {
             // prepare: find sim
@@ -250,15 +260,18 @@ public class SimCardServiceTest {
         }
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void consumeQuota_noSimFound() {
-        SimCardEntity sim = new SimCardEntity();
-        when(simCardRepository.findById(555L)).thenReturn(Optional.ofNullable(null));
-        //given(simCardService.consumeQuota(any())).willThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class,
+                () -> {
+                    SimCardEntity sim = new SimCardEntity();
+                    when(simCardRepository.findById(555L)).thenReturn(Optional.empty());
+                    //given(simCardService.consumeQuota(any())).willThrow(NotFoundException.class);
 
-        ConsumeQuotaRequest request = new ConsumeQuotaRequest();
-        request.setSimId(555L);
-        simCardService.consumeQuota(request);
+                    ConsumeQuotaRequest request = new ConsumeQuotaRequest();
+                    request.setSimId(555L);
+                    simCardService.consumeQuota(request);
+                });
     }
 
 }
