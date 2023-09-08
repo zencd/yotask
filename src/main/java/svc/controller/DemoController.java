@@ -12,6 +12,7 @@ import svc.entity.SimCardEntity;
 import svc.repository.SimCardRepository;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,13 +30,16 @@ public class DemoController {
 
     @ResponseBody
     @GetMapping(value = "/", produces = "text/html; charset=utf-8")
+    @Operation(summary = "Demo index page")
     Resource index() throws IOException {
         return bannerFile;
     }
 
     @GetMapping("/sims")
-    @Operation(summary = "For development only.")
+    @Operation(summary = "For demo only")
     public List<SimCardEntity> allSims() {
-        return simCardRepository.findAll();
+        var sims = new ArrayList<SimCardEntity>();
+        simCardRepository.findAll().forEach(sims::add);
+        return sims;
     }
 }

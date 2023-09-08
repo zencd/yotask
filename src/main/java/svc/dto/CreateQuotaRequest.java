@@ -20,11 +20,11 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Schema(description = "Request model for method \"create quota\"")
+@Schema(description = "Request model for method `create quota`")
 public class CreateQuotaRequest {
 
     @NotNull
-    @Schema(description = "Тип пакета: голос или интернет", allowableValues = "voice, traffic")
+    @Schema(description = "Тип пакета: голос или интернет")
     SimQuotaType type;
 
     @NotNull

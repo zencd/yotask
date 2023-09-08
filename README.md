@@ -30,7 +30,7 @@
 
 ## Implementation
 
-- Java 17/20 are ok
+- Verified with Java 17 & 20
 - Spring Boot 3.1
 - Validation
 - H2 DB with UI

@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Schema(description = "Request model for method `consume quota`")
 public class ConsumeQuotaRequest {
 
     @NotNull
