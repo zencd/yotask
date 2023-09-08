@@ -1,33 +1,45 @@
+buildscript {
+    ext {
+        bootVersion = '3.1.3'
+        versions = [
+                boot     : bootVersion,
+                lombok   : '1.18.28',
+                mapstruct: '1.4.2.Final',
+                spock    : '2.3-groovy-4.0',
+                groovy   : '4.0.14',
+                h2       : '2.2.222',
+                springdoc: '2.2.0',
+                openapi3 : '2.2.15',
+                jaxb     : '2.3.1',
+        ]
+    }
+}
+
 plugins {
     id 'java'
     id 'groovy'
-    id 'org.springframework.boot' version '3.1.3'
+    id 'org.springframework.boot' version "${bootVersion}"
 }
 
 repositories {
     mavenCentral()
 }
 
-group = 'pasza'
-version = '0.0.1-SNAPSHOT'
+group = 'demo'
 archivesBaseName = 'simService'
+version = '0.0.1-SNAPSHOT'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-def versions = [
-        boot: '3.1.3',
-        lombok: '1.18.28',
-        mapstruct: '1.4.2.Final',
-]
-
 test {
     useJUnitPlatform()
 }
 
 dependencies {
+    // spring
     implementation "org.springframework.boot:spring-boot-starter:${versions.boot}"
     implementation "org.springframework.boot:spring-boot-starter-web:${versions.boot}"
     implementation "org.springframework.boot:spring-boot-devtools:${versions.boot}"
@@ -38,24 +50,25 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test:${versions.boot}"
 
     // open api
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
-    implementation 'io.swagger.core.v3:swagger-annotations:2.2.15'
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.springdoc"
+    implementation "io.swagger.core.v3:swagger-annotations:$versions.openapi3"
 
-    runtimeOnly "com.h2database:h2:2.2.222"
+    runtimeOnly "com.h2database:h2:$versions.h2"
 
-    runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1'
+    runtimeOnly "javax.xml.bind:jaxb-api:$versions.jaxb"
 
     // lombok
-    compileOnly 'org.projectlombok:lombok:1.18.28'
-    annotationProcessor 'org.projectlombok:lombok:1.18.28'
-    testCompileOnly 'org.projectlombok:lombok:1.18.28'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
+    compileOnly "org.projectlombok:lombok:$versions.lombok"
+    annotationProcessor "org.projectlombok:lombok:$versions.lombok"
+    testCompileOnly "org.projectlombok:lombok:$versions.lombok"
+    testAnnotationProcessor "org.projectlombok:lombok:$versions.lombok"
 
     // mapstruct
     implementation "org.mapstruct:mapstruct:${versions.mapstruct}"
     annotationProcessor "org.mapstruct:mapstruct-processor:${versions.mapstruct}"
 
     // spock
-    testImplementation "org.spockframework:spock-core:2.3-groovy-4.0"
-    testImplementation 'org.apache.groovy:groovy:4.0.14'
+    testImplementation "org.spockframework:spock-core:${versions.spock}"
+    testImplementation "org.spockframework:spock-spring:${versions.spock}"
+    testImplementation "org.apache.groovy:groovy:${versions.groovy}"
 }
