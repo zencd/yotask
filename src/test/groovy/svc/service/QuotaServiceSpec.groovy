@@ -37,8 +37,8 @@ class QuotaServiceSpec extends Specification {
         assert info.traffic == 100
         assert info.voice == 500
         1 * simCardRepository.findById(555) >> Optional.of(sim)
-        1 * simQuotaRepository.sumQuota(_, SimQuotaType.TRAFFIC, _) >> Optional.of(100.toBigDecimal())
-        1 * simQuotaRepository.sumQuota(_, SimQuotaType.VOICE, _) >> Optional.of(500.toBigDecimal())
+        1 * simQuotaRepository.sumQuota(_, svc.entity.SimQuotaType.TRAFFIC, _) >> Optional.of(100.toBigDecimal())
+        1 * simQuotaRepository.sumQuota(_, svc.entity.SimQuotaType.VOICE, _) >> Optional.of(500.toBigDecimal())
         0 * _
     }
 
@@ -61,7 +61,7 @@ class QuotaServiceSpec extends Specification {
         1 * simCardRepository.findById(555) >> Optional.of(sim)
         1 * simQuotaRepository.save(_) >> { SimQuotaEntity quota ->
             assert quota.simCard == sim
-            assert quota.type == SimQuotaType.TRAFFIC
+            assert quota.type == svc.entity.SimQuotaType.TRAFFIC
             assert quota.balance == 123
             assert quota.endDate == null
             quota.id = 222

@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 /**
- * Тесты на валидацию, это требует поднятия контекста.
+ * Тесты на валидацию запросов, это требует поднятия контекста.
  */
 @WebMvcTest(SimServiceController.class)
 class SimServiceControllerTest {

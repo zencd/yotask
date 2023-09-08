@@ -69,7 +69,7 @@ class ComponentTest {
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath('$.id', is(1)))
-				.andExpect(jsonPath('$.status', is(1)))
+				.andExpect(jsonPath('$.status', is("enabled")))
 				.andExpect(jsonPath('$.type', is("voice")))
 				.andExpect(jsonPath('$.balance', is(20)))
 				.andExpect(jsonPath('$.endDate', is(notNullValue())))
@@ -86,7 +86,7 @@ class ComponentTest {
 
 		var quota = new SimQuotaEntity(
 				simCard: sim,
-				type: SimQuotaType.VOICE,
+				type: svc.entity.SimQuotaType.VOICE,
 				balance: 100,
 				status: SimQuotaStatus.ENABLED,
 				lastUpdated: now,
@@ -117,7 +117,7 @@ class ComponentTest {
 
 		var quotaVoice = new SimQuotaEntity(
 				simCard: sim,
-				type: SimQuotaType.VOICE,
+				type: svc.entity.SimQuotaType.VOICE,
 				balance: 100,
 				status: SimQuotaStatus.ENABLED,
 				lastUpdated: now,
@@ -127,7 +127,7 @@ class ComponentTest {
 
 		var quotaTraffic = new SimQuotaEntity(
 				simCard: sim,
-				type: SimQuotaType.TRAFFIC,
+				type: svc.entity.SimQuotaType.TRAFFIC,
 				balance: 200,
 				status: SimQuotaStatus.ENABLED,
 				lastUpdated: now,

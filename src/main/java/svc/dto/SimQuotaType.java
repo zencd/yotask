@@ -2,34 +2,26 @@ package svc.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public enum SimQuotaType {
 
-    VOICE(0, "voice"), TRAFFIC(1, "traffic");
+    VOICE("voice"), TRAFFIC("traffic");
 
-    private int intValue;
-    private String code;
+    @Getter
+    @JsonValue
+    private final String code;
 
     private static class Helper {
         static final Map<String, SimQuotaType> BY_CODE = new HashMap<>();
     }
 
-    SimQuotaType(int intValue, String code) {
-        if (ordinal() != intValue) {
-            // XXX Using ordinal in DB, so make sure we won't lose correct mapping after enums reordered
-            throw new IllegalArgumentException("The `intValue` must increment along with its ordinal");
-        }
-        this.intValue = intValue;
+    SimQuotaType(String code) {
         this.code = code;
         Helper.BY_CODE.put(code, this);
-    }
-
-    @JsonValue
-    public String jsonValue() {
-        return code;
     }
 
     @JsonCreator

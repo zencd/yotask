@@ -5,6 +5,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import svc.dto.CreateQuotaRequest;
 import svc.dto.SimQuota;
+import svc.dto.SimQuotaType;
 import svc.entity.SimCardEntity;
 import svc.entity.SimQuotaEntity;
 
@@ -19,5 +20,7 @@ public interface SimQuotaMapper {
     SimQuotaEntity toSimQuota(CreateQuotaRequest request, SimCardEntity simCard);
 
     SimQuota toSimQuotaDto(SimQuotaEntity source);
+
+    svc.entity.SimQuotaType toEntity(SimQuotaType source);
 
 }

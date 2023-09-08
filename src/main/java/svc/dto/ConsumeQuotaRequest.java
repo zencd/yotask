@@ -18,11 +18,10 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Schema(description = "Request model for method \"consume quota\"")
 public class ConsumeQuotaRequest {
 
-    @Schema(description = "Тип пакета: голос или интернет")
     @NotNull
+    @Schema(description = "Тип пакета: голос или интернет")
     SimQuotaType type;
 
     @NotNull

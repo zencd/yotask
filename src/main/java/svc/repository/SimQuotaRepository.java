@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import svc.entity.SimCardEntity;
 import svc.entity.SimQuotaEntity;
-import svc.dto.SimQuotaType;
+import svc.entity.SimQuotaType;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;

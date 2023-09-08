@@ -16,7 +16,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import svc.dto.SimQuotaType;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -24,7 +23,7 @@ import java.time.OffsetDateTime;
 /**
  * A single quota (packet) available to a SIM.
  * There can be zero or many of them.
- * One `SimQuota` describes either voice minutes, or certain amount of internet traffic - distinct by `type`.
+ * One `SimQuotaEntity` describes either voice minutes, or certain amount of internet traffic - distinct by `type`.
  */
 @Builder
 @AllArgsConstructor

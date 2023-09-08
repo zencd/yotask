@@ -13,7 +13,7 @@ import svc.dto.SimQuota;
 import svc.dto.SimQuotaAvailable;
 import svc.entity.SimCardEntity;
 import svc.entity.SimQuotaEntity;
-import svc.dto.SimQuotaType;
+import svc.entity.SimQuotaType;
 import svc.exception.NotFoundException;
 import svc.mapper.SimQuotaMapper;
 import svc.repository.SimCardRepository;
@@ -63,7 +63,8 @@ public class QuotaServiceImpl implements QuotaService {
 
         BigDecimal toChargeYet = request.getAmount();
 
-        List<SimQuotaEntity> quotas = simQuotaRepository.findAllActiveQuota(sim, request.getType(), OffsetDateTime.now());
+        svc.entity.SimQuotaType simQuotaType = simQuotaMapper.toEntity(request.getType());
+        List<SimQuotaEntity> quotas = simQuotaRepository.findAllActiveQuota(sim, simQuotaType, OffsetDateTime.now());
         for (SimQuotaEntity aQuota : quotas) {
             if (toChargeYet.compareTo(BigDecimal.ZERO) <= 0) {
                 break;
